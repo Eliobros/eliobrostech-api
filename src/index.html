@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download API Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            margin: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .api-key-card {
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .api-key-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .api-key-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .api-key-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .api-key-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .api-key-value {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            word-break: break-all;
+            font-size: 0.9rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e1e5e9;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .download-section {
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .platform-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .platform-btn {
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .platform-btn:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .platform-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .format-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .format-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .format-btn:hover {
+            border-color: #667eea;
+        }
+
+        .format-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .download-result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid #e1e5e9;
+            background: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .platform-buttons {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .format-selector {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Download API Dashboard</h1>
+            <p>Gerencie suas API Keys e faça downloads de múltiplas plataformas</p>
+        </div>
+
+        <!-- Seção de Login/Registro -->
+        <div id="authSection">
+            <div class="tabs">
+                <div class="tab active" onclick="switchAuthTab('login')">Login</div>
+                <div class="tab" onclick="switchAuthTab('register')">Registrar</div>
+            </div>
+
+            <!-- Login -->
+            <div id="loginSection" class="section active">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Usuário:</label>
+                        <input type="text" id="loginUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Senha:</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn">Entrar</button>
+                </form>
+            </div>
+
+            <!-- Registro -->
+            <div id="registerSection" class="section">
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label>Usuário:</label>
+                        <input type="text" id="registerUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Senha:</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <button type="submit" class="btn">Registrar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard Principal -->
+        <div id="dashboardSection" class="hidden">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('keys')">API Keys</div>
+                <div class="tab" onclick="switchTab('download')">Download</div>
+                <div class="tab" onclick="switchTab('stats')">Estatísticas</div>
+            </div>
+
+            <!-- Botão de Logout -->
+            <div style="text-align: right; margin-bottom: 1rem;">
+                <button class="btn btn-secondary" onclick="logout()" style="width: auto;">Sair</button>
+            </div>
+
+            <!-- Seção API Keys -->
+            <div id="keysSection" class="section active">
+                <div class="form-group">
+                    <label>Nome da API Key:</label>
+                    <input type="text" id="keyName" placeholder="Ex: Meu App">
+                </div>
+                <button class="btn" onclick="generateApiKey()">Gerar Nova API Key</button>
+
+                <div id="apiKeysList"></div>
+            </div>
+
+            <!-- Seção Download -->
+            <div id="downloadSection" class="section">
+                <div class="download-section">
+                    <h3>Selecione a Plataforma:</h3>
+                    <div class="platform-buttons">
+                        <div class="platform-btn active" onclick="selectPlatform('youtube')">📺 YouTube</div>
+                        <div class="platform-btn" onclick="selectPlatform('facebook')">📘 Facebook</div>
+                        <div class="platform-btn" onclick="selectPlatform('tiktok')">🎵 TikTok</div>
+                        <div class="platform-btn" onclick="selectPlatform('instagram')">📸 Instagram</div>
+                        <div class="platform-btn" onclick="selectPlatform('spotify')">🎶 Spotify</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL do Conteúdo:</label>
+                        <input type="url" id="downloadUrl" placeholder="Cole a URL aqui...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Formato:</label>
+                        <div class="format-selector">
+                            <div class="format-btn active" onclick="selectFormat('mp4')">MP4</div>
+                            <div class="format-btn" onclick="selectFormat('mp3')">MP3</div>
+                            <div class="format-btn" onclick="selectFormat('m4a')">M4A</div>
+                            <div class="format-btn" onclick="selectFormat('wav')">WAV</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>API Key:</label>
+                        <select id="downloadApiKey">
+                            <option value="">Selecione uma API Key</option>
+                        </select>
+                    </div>
+
+                    <button class="btn" onclick="startDownload()">Iniciar Download</button>
+
+                    <div id="downloadResult"></div>
+                </div>
+            </div>
+
+            <!-- Seção Estatísticas -->
+            <div id="statsSection" class="section">
+                <div class="form-group">
+                    <label>API Key para Estatísticas:</label>
+                    <select id="statsApiKey" onchange="loadStats()">
+                        <option value="">Selecione uma API Key</option>
+                    </select>
+                </div>
+
+                <div id="statsDisplay"></div>
+            </div>
+        </div>
+
+        <div id="alerts"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://93.127.129.84:3001';
+        let currentUser = null;
+        let selectedPlatform = 'youtube';
+        let selectedFormat = 'mp4';
+
+        // Verificar se já está logado
+        window.onload = function() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                currentUser = { token };
+                showDashboard();
+                loadApiKeys();
+            }
+        };
+
+        // Funções de Autenticação
+        function switchAuthTab(tab) {
+            document.querySelectorAll('#authSection .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#authSection .section').forEach(s => s.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.querySelector('#authSection .tab').classList.add('active');
+                document.getElementById('loginSection').classList.add('active');
+            } else {
+                document.querySelectorAll('#authSection .tab')[1].classList.add('active');
+                document.getElementById('registerSection').classList.add('active');
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('#dashboardSection .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#dashboardSection .section').forEach(s => s.classList.remove('active'));
+            
+            document.querySelector(`#dashboardSection .tab:nth-child(${tab === 'keys' ? '1' : tab === 'download' ? '2' : '3'})`).classList.add('active');
+            document.getElementById(`${tab}Section`).classList.add('active');
+            
+            if (tab === 'keys') {
+                loadApiKeys();
+            } else if (tab === 'download') {
+                populateApiKeySelectors();
+            } else if (tab === 'stats') {
+                populateApiKeySelectors();
+            }
+        }
+
+        document.getElementById('loginForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    currentUser = data;
+                    showAlert('Login realizado com sucesso!', 'success');
+                    showDashboard();
+                    loadApiKeys();
+                } else {
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Erro de conexão', 'error');
+            }
+        };
+
+        document.getElementById('registerForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('Usuário registrado com sucesso! Faça login.', 'success');
+                    switchAuthTab('login');
+                } else {
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Erro de conexão', 'error');
+            }
+        };
+
+        function logout() {
+            localStorage.removeItem('token');
+            currentUser = null;
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('dashboardSection').classList.add('hidden');
+            showAlert('Logout realizado com sucesso!', 'info');
+        }
+
+        function showDashboard() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+        }
+
+        // Funções de API Keys
+        async function generateApiKey() {
+            const keyName = document.getElementById('keyName').value;
+            if (!keyName) {
+                showAlert('Digite um nome para a API Key', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/keys/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ keyName })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('API Key gerada com sucesso!', 'success');
+                    document.getElementById('keyName').value = '';
+                    loadApiKeys();
+                } else {
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Erro de conexão', 'error');
+            }
+        }
+
+        async function loadApiKeys() {
+            try {
+                const response = await fetch(`${API_BASE}/api/keys`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const keys = await response.json();
+
+                if (response.ok) {
+                    displayApiKeys(keys);
+                } else {
+                    showAlert(keys.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Erro ao carregar API Keys', 'error');
+            }
+        }
+
+        function displayApiKeys(keys) {
+            const container = document.getElementById('apiKeysList');
+            
+            if (keys.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">Nenhuma API Key encontrada. Gere uma nova!</div>';
+                return;
+            }
+
+            container.innerHTML = keys.map(key => `
+                <div class="api-key-card">
+                    <div class="api-key-header">
+                        <div class="api-key-name">${key.keyName}</div>
+                        <div class="api-key-status ${key.isActive ? 'status-active' : 'status-inactive'}">
+                            ${key.isActive ? 'Ativa' : 'Inativa'}
+                        </div>
+                    </div>
+                    <div class="api-key-value">${key.apiKey}</div>
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
+                        Criada em: ${new Date(key.createdAt).toLocaleDateString('pt-BR')} | 
+                        Requisições: ${key.requestCount} | 
+                        Limite diário: ${key.dailyLimit}
+                    </div>
+                    ${key.isActive ? `
+                        <button class="btn btn-danger" onclick="deactivateKey('${key._id}')" style="width: auto;">
+                            Desativar
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function deactivateKey(keyId) {
+            if (!confirm('Tem certeza que deseja desativar esta API Key?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/keys/${keyId}/deactivate`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('API Key desativada', 'info');
+                    loadApiKeys();
+                } else {
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Erro ao desativar API Key', 'error');
+            }
+        }
+
+        // Funções de Download
+        function selectPlatform(platform) {
+            document.querySelectorAll('.platform-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            selectedPlatform = platform;
+        }
+
+        function selectFormat(format) {
+            document.querySelectorAll('.format-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            selectedFormat = format;
+        }
+
+        async function populateApiKeySelectors() {
+            try {
+                const response = await fetch(`${API_BASE}/api/keys`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const keys = await response.json();
+
+                if (response.ok) {
+                    const activeKeys = keys.filter(key => key.isActive);
+                    const options = activeKeys.map(key => 
+                        `<option value="${key.apiKey}">${key.keyName}</option>`
+                    ).join('');
+
+                    document.getElementById('downloadApiKey').innerHTML = 
+                        '<option value="">Selecione uma API Key</option>' + options;
+                    document.getElementById('statsApiKey').innerHTML = 
+                        '<option value="">Selecione uma API Key</option>' + options;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar API Keys:', error);
+            }
+        }
+
+        async function startDownload() {
+            const url = document.getElementById('downloadUrl').value;
+            const apiKey = document.getElementById('downloadApiKey').value;
+
+            if (!url || !apiKey) {
+                showAlert('Preencha a URL e selecione uma API Key', 'error');
+                return;
+            }
+
+            const resultDiv = document.getElementById('downloadResult');
+            resultDiv.innerHTML = '<div class="loading"></div> Processando download...';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/download/${selectedPlatform}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': apiKey
+                    },
+                    body: JSON.stringify({ url, type: selectedFormat })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <h4>Download concluído!</h4>
+                            <p><strong>Título:</strong> ${data.title}</p>
+                            <p><strong>Formato:</strong> ${data.format}</p>
+                            <p><strong>Tamanho:</strong> ${(data.file_size / 1024 / 1024).toFixed(2)} MB</p>
+                            <p><strong>Arquivo:</strong> ${data.file_path}</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-error">
+                            <h4>Erro no download</h4>
+                            <p>${data.error || 'Erro desconhecido'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-error">
+                        <h4>Erro de conexão</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Funções de Estatísticas
+        async function loadStats() {
+            const apiKey = document.getElementById('statsApiKey').value;
+            if (!apiKey) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/stats`, {
+                    headers: {
+                        'X-API-Key': apiKey
+                    }
+                });
+
+                const stats = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('statsDisplay').innerHTML = `
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">${stats.totalDownloads}</div>
+                                <div class="stat-label">Total de Downloads</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">${stats.successfulDownloads}</div>
+                                <div class="stat-label">Downloads Bem-sucedidos</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">${stats.todayDownloads}</div>
+                                <div class="stat-label">Downloads Hoje</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">${stats.remainingToday}</div>
+                                <div class="stat-label">Restantes Hoje</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    showAlert(stats.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Erro ao carregar estatísticas', 'error');
+            }
+        }
+
+        // Função para mostrar alertas
+        function showAlert(message, type) {
+            const alertsContainer = document.getElementById('alerts');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            alertsContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
