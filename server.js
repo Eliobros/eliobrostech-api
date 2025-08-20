@@ -99,10 +99,48 @@ const executePythonScript = (platform, url, format) => {
       }
       
       try {
-        const result = JSON.parse(stdout);
+        // Tentar extrair JSON válido do output
+        let jsonOutput = stdout.trim();
+        
+        // Se houver múltiplas linhas, procurar pela linha que contém JSON
+        if (jsonOutput.includes('\n')) {
+          const lines = jsonOutput.split('\n');
+          for (let line of lines) {
+            line = line.trim();
+            if (line.startsWith('{') && line.endsWith('}')) {
+              jsonOutput = line;
+              break;
+            }
+          }
+        }
+        
+        // Se ainda não for JSON válido, procurar por padrões JSON no output
+        if (!jsonOutput.startsWith('{') || !jsonOutput.endsWith('}')) {
+          const jsonMatch = jsonOutput.match(/\{.*\}/);
+          if (jsonMatch) {
+            jsonOutput = jsonMatch[0];
+          }
+        }
+        
+        const result = JSON.parse(jsonOutput);
         resolve(result);
       } catch (parseError) {
-        reject(parseError);
+        // Se falhar o parsing, tentar extrair o erro do output
+        let errorMessage = 'Erro ao processar resposta do Python';
+        
+        if (stdout.includes('ERROR:')) {
+          const errorMatch = stdout.match(/ERROR:.*?(?=\n|$)/);
+          if (errorMatch) {
+            errorMessage = errorMatch[0].trim();
+          }
+        } else if (stdout.includes('error')) {
+          const errorMatch = stdout.match(/"error":\s*"([^"]+)"/);
+          if (errorMatch) {
+            errorMessage = errorMatch[1];
+          }
+        }
+        
+        reject(new Error(`Erro ao processar resposta do Python: ${errorMessage}`));
       }
     });
   });

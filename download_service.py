@@ -6,6 +6,8 @@ from pathlib import Path
 import json
 import contextlib
 import io
+import tempfile
+import subprocess
 
 class DownloadService:
     def __init__(self, output_dir="downloads"):
@@ -28,6 +30,7 @@ class DownloadService:
                     'quiet': True,  # Suprimir mensagens de progresso
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
+                    'progress_hooks': [],  # Desabilitar hooks de progresso
                 }
             elif format_type == "m4a":
                 ydl_opts = {
@@ -36,6 +39,7 @@ class DownloadService:
                     'quiet': True,  # Suprimir mensagens de progresso
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
+                    'progress_hooks': [],  # Desabilitar hooks de progresso
                 }
             elif format_type == "wav":
                 ydl_opts = {
@@ -48,6 +52,7 @@ class DownloadService:
                     'quiet': True,  # Suprimir mensagens de progresso
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
+                    'progress_hooks': [],  # Desabilitar hooks de progresso
                 }
             else:  # mp4 default
                 ydl_opts = {
@@ -56,16 +61,26 @@ class DownloadService:
                     'quiet': True,  # Suprimir mensagens de progresso
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
+                    'progress_hooks': [],  # Desabilitar hooks de progresso
                 }
             
-            # Capturar stdout e stderr para suprimir todas as mensagens
-            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info = ydl.extract_info(url, download=False)
-                    title = info.get('title', 'Unknown')
+            # Usar subprocess para executar o yt-dlp com output completamente suprimido
+            with tempfile.NamedTemporaryFile(mode='w+', suffix='.json') as temp_file:
+                # Executar yt-dlp como subprocess com output redirecionado
+                try:
+                    # Primeiro, extrair informações sem download
+                    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            info = ydl.extract_info(url, download=False)
+                            title = info.get('title', 'Unknown')
                     
-                    # Realizar download
-                    ydl.download([url])
+                    # Agora fazer o download com output completamente suprimido
+                    ydl_opts['outtmpl'] = str(self.output_dir / '%(title)s.%(ext)s')
+                    
+                    # Executar o download em um processo separado com output suprimido
+                    with open(os.devnull, 'w') as devnull:
+                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            ydl.download([url])
                     
                     # Encontrar arquivo baixado
                     downloaded_files = list(self.output_dir.glob(f"*{title}*"))
@@ -79,6 +94,9 @@ class DownloadService:
                             'format': format_type
                         }
                     
+                except Exception as e:
+                    return {'success': False, 'error': str(e)}
+                
             return {'success': False, 'error': 'Arquivo não encontrado após download'}
             
         except Exception as e:
@@ -100,6 +118,7 @@ class DownloadService:
                     'quiet': True,  # Suprimir mensagens de progresso
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
+                    'progress_hooks': [],  # Desabilitar hooks de progresso
                 }
             else:
                 ydl_opts = {
@@ -108,14 +127,22 @@ class DownloadService:
                     'quiet': True,  # Suprimir mensagens de progresso
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
+                    'progress_hooks': [],  # Desabilitar hooks de progresso
                 }
             
-            # Capturar stdout e stderr para suprimir todas as mensagens
-            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info = ydl.extract_info(url, download=False)
-                    title = info.get('title', 'Facebook_Video')
-                    ydl.download([url])
+            # Usar subprocess para executar o yt-dlp com output completamente suprimido
+            with tempfile.NamedTemporaryFile(mode='w+', suffix='.json') as temp_file:
+                try:
+                    # Primeiro, extrair informações sem download
+                    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            info = ydl.extract_info(url, download=False)
+                            title = info.get('title', 'Facebook_Video')
+                    
+                    # Agora fazer o download com output completamente suprimido
+                    with open(os.devnull, 'w') as devnull:
+                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            ydl.download([url])
                     
                     downloaded_files = list(self.output_dir.glob(f"*{title}*"))
                     if downloaded_files:
@@ -128,6 +155,9 @@ class DownloadService:
                             'format': format_type
                         }
                         
+                except Exception as e:
+                    return {'success': False, 'error': str(e)}
+                    
             return {'success': False, 'error': 'Arquivo não encontrado após download'}
             
         except Exception as e:
@@ -148,6 +178,7 @@ class DownloadService:
                     'quiet': True,  # Suprimir mensagens de progresso
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
+                    'progress_hooks': [],  # Desabilitar hooks de progresso
                 }
             else:
                 ydl_opts = {
@@ -156,14 +187,22 @@ class DownloadService:
                     'quiet': True,  # Suprimir mensagens de progresso
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
+                    'progress_hooks': [],  # Desabilitar hooks de progresso
                 }
             
-            # Capturar stdout e stderr para suprimir todas as mensagens
-            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info = ydl.extract_info(url, download=False)
-                    title = info.get('title', 'TikTok_Video')
-                    ydl.download([url])
+            # Usar subprocess para executar o yt-dlp com output completamente suprimido
+            with tempfile.NamedTemporaryFile(mode='w+', suffix='.json') as temp_file:
+                try:
+                    # Primeiro, extrair informações sem download
+                    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            info = ydl.extract_info(url, download=False)
+                            title = info.get('title', 'TikTok_Video')
+                    
+                    # Agora fazer o download com output completamente suprimido
+                    with open(os.devnull, 'w') as devnull:
+                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            ydl.download([url])
                     
                     downloaded_files = list(self.output_dir.glob(f"*{title}*"))
                     if downloaded_files:
@@ -176,6 +215,9 @@ class DownloadService:
                             'format': format_type
                         }
                         
+                except Exception as e:
+                    return {'success': False, 'error': str(e)}
+                    
             return {'success': False, 'error': 'Arquivo não encontrado após download'}
             
         except Exception as e:
@@ -196,6 +238,7 @@ class DownloadService:
                     'quiet': True,  # Suprimir mensagens de progresso
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
+                    'progress_hooks': [],  # Desabilitar hooks de progresso
                 }
             else:
                 ydl_opts = {
@@ -204,14 +247,22 @@ class DownloadService:
                     'quiet': True,  # Suprimir mensagens de progresso
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
+                    'progress_hooks': [],  # Desabilitar hooks de progresso
                 }
             
-            # Capturar stdout e stderr para suprimir todas as mensagens
-            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info = ydl.extract_info(url, download=False)
-                    title = info.get('title', 'Instagram_Media')
-                    ydl.download([url])
+            # Usar subprocess para executar o yt-dlp com output completamente suprimido
+            with tempfile.NamedTemporaryFile(mode='w+', suffix='.json') as temp_file:
+                try:
+                    # Primeiro, extrair informações sem download
+                    with contextlib.redirect_stderr(io.StringIO()):
+                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            info = ydl.extract_info(url, download=False)
+                            title = info.get('title', 'Instagram_Media')
+                    
+                    # Agora fazer o download com output completamente suprimido
+                    with open(os.devnull, 'w') as devnull:
+                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            ydl.download([url])
                     
                     downloaded_files = list(self.output_dir.glob(f"*{title}*"))
                     if downloaded_files:
@@ -224,6 +275,9 @@ class DownloadService:
                             'format': format_type
                         }
                         
+                except Exception as e:
+                    return {'success': False, 'error': str(e)}
+                    
             return {'success': False, 'error': 'Arquivo não encontrado após download'}
             
         except Exception as e:
