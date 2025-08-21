@@ -4,6 +4,8 @@ import os
 import sys
 from pathlib import Path
 import json
+import contextlib
+import io
 
 class DownloadService:
     def __init__(self, output_dir="downloads"):
@@ -23,11 +25,17 @@ class DownloadService:
                         'preferredcodec': 'mp3',
                         'preferredquality': '192',
                     }],
+                    'quiet': True,  # Suprimir mensagens de progresso
+                    'no_warnings': True,  # Suprimir warnings
+                    'noprogress': True,  # Suprimir barra de progresso
                 }
             elif format_type == "m4a":
                 ydl_opts = {
                     'format': 'bestaudio[ext=m4a]/best[ext=m4a]/bestaudio/best',
                     'outtmpl': str(self.output_dir / '%(title)s.%(ext)s'),
+                    'quiet': True,  # Suprimir mensagens de progresso
+                    'no_warnings': True,  # Suprimir warnings
+                    'noprogress': True,  # Suprimir barra de progresso
                 }
             elif format_type == "wav":
                 ydl_opts = {
@@ -37,32 +45,40 @@ class DownloadService:
                         'key': 'FFmpegExtractAudio',
                         'preferredcodec': 'wav',
                     }],
+                    'quiet': True,  # Suprimir mensagens de progresso
+                    'no_warnings': True,  # Suprimir warnings
+                    'noprogress': True,  # Suprimir barra de progresso
                 }
             else:  # mp4 default
                 ydl_opts = {
                     'format': 'best[ext=mp4]/best',
                     'outtmpl': str(self.output_dir / '%(title)s.%(ext)s'),
+                    'quiet': True,  # Suprimir mensagens de progresso
+                    'no_warnings': True,  # Suprimir warnings
+                    'noprogress': True,  # Suprimir barra de progresso
                 }
             
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url, download=False)
-                title = info.get('title', 'Unknown')
-                
-                # Realizar download
-                ydl.download([url])
-                
-                # Encontrar arquivo baixado
-                downloaded_files = list(self.output_dir.glob(f"*{title}*"))
-                if downloaded_files:
-                    file_path = downloaded_files[0]
-                    return {
-                        'success': True,
-                        'title': title,
-                        'file_path': str(file_path),
-                        'file_size': file_path.stat().st_size,
-                        'format': format_type
-                    }
-                
+            # Capturar stdout e stderr para suprimir todas as mensagens
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info = ydl.extract_info(url, download=False)
+                    title = info.get('title', 'Unknown')
+                    
+                    # Realizar download
+                    ydl.download([url])
+                    
+                    # Encontrar arquivo baixado
+                    downloaded_files = list(self.output_dir.glob(f"*{title}*"))
+                    if downloaded_files:
+                        file_path = downloaded_files[0]
+                        return {
+                            'success': True,
+                            'title': title,
+                            'file_path': str(file_path),
+                            'file_size': file_path.stat().st_size,
+                            'format': format_type
+                        }
+                    
             return {'success': False, 'error': 'Arquivo não encontrado após download'}
             
         except Exception as e:
@@ -81,29 +97,37 @@ class DownloadService:
                         'preferredcodec': 'mp3',
                         'preferredquality': '192',
                     }],
+                    'quiet': True,  # Suprimir mensagens de progresso
+                    'no_warnings': True,  # Suprimir warnings
+                    'noprogress': True,  # Suprimir barra de progresso
                 }
             else:
                 ydl_opts = {
                     'format': 'best[ext=mp4]/best',
                     'outtmpl': str(self.output_dir / '%(title)s.%(ext)s'),
+                    'quiet': True,  # Suprimir mensagens de progresso
+                    'no_warnings': True,  # Suprimir warnings
+                    'noprogress': True,  # Suprimir barra de progresso
                 }
             
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url, download=False)
-                title = info.get('title', 'Facebook_Video')
-                ydl.download([url])
-                
-                downloaded_files = list(self.output_dir.glob(f"*{title}*"))
-                if downloaded_files:
-                    file_path = downloaded_files[0]
-                    return {
-                        'success': True,
-                        'title': title,
-                        'file_path': str(file_path),
-                        'file_size': file_path.stat().st_size,
-                        'format': format_type
-                    }
+            # Capturar stdout e stderr para suprimir todas as mensagens
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info = ydl.extract_info(url, download=False)
+                    title = info.get('title', 'Facebook_Video')
+                    ydl.download([url])
                     
+                    downloaded_files = list(self.output_dir.glob(f"*{title}*"))
+                    if downloaded_files:
+                        file_path = downloaded_files[0]
+                        return {
+                            'success': True,
+                            'title': title,
+                            'file_path': str(file_path),
+                            'file_size': file_path.stat().st_size,
+                            'format': format_type
+                        }
+                        
             return {'success': False, 'error': 'Arquivo não encontrado após download'}
             
         except Exception as e:
@@ -121,29 +145,37 @@ class DownloadService:
                         'preferredcodec': 'mp3',
                         'preferredquality': '192',
                     }],
+                    'quiet': True,  # Suprimir mensagens de progresso
+                    'no_warnings': True,  # Suprimir warnings
+                    'noprogress': True,  # Suprimir barra de progresso
                 }
             else:
                 ydl_opts = {
                     'format': 'best',
                     'outtmpl': str(self.output_dir / '%(title)s.%(ext)s'),
+                    'quiet': True,  # Suprimir mensagens de progresso
+                    'no_warnings': True,  # Suprimir warnings
+                    'noprogress': True,  # Suprimir barra de progresso
                 }
             
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url, download=False)
-                title = info.get('title', 'TikTok_Video')
-                ydl.download([url])
-                
-                downloaded_files = list(self.output_dir.glob(f"*{title}*"))
-                if downloaded_files:
-                    file_path = downloaded_files[0]
-                    return {
-                        'success': True,
-                        'title': title,
-                        'file_path': str(file_path),
-                        'file_size': file_path.stat().st_size,
-                        'format': format_type
-                    }
+            # Capturar stdout e stderr para suprimir todas as mensagens
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info = ydl.extract_info(url, download=False)
+                    title = info.get('title', 'TikTok_Video')
+                    ydl.download([url])
                     
+                    downloaded_files = list(self.output_dir.glob(f"*{title}*"))
+                    if downloaded_files:
+                        file_path = downloaded_files[0]
+                        return {
+                            'success': True,
+                            'title': title,
+                            'file_path': str(file_path),
+                            'file_size': file_path.stat().st_size,
+                            'format': format_type
+                        }
+                        
             return {'success': False, 'error': 'Arquivo não encontrado após download'}
             
         except Exception as e:
@@ -161,29 +193,37 @@ class DownloadService:
                         'preferredcodec': 'mp3',
                         'preferredquality': '192',
                     }],
+                    'quiet': True,  # Suprimir mensagens de progresso
+                    'no_warnings': True,  # Suprimir warnings
+                    'noprogress': True,  # Suprimir barra de progresso
                 }
             else:
                 ydl_opts = {
                     'format': 'best',
                     'outtmpl': str(self.output_dir / '%(title)s.%(ext)s'),
+                    'quiet': True,  # Suprimir mensagens de progresso
+                    'no_warnings': True,  # Suprimir warnings
+                    'noprogress': True,  # Suprimir barra de progresso
                 }
             
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url, download=False)
-                title = info.get('title', 'Instagram_Media')
-                ydl.download([url])
-                
-                downloaded_files = list(self.output_dir.glob(f"*{title}*"))
-                if downloaded_files:
-                    file_path = downloaded_files[0]
-                    return {
-                        'success': True,
-                        'title': title,
-                        'file_path': str(file_path),
-                        'file_size': file_path.stat().st_size,
-                        'format': format_type
-                    }
+            # Capturar stdout e stderr para suprimir todas as mensagens
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info = ydl.extract_info(url, download=False)
+                    title = info.get('title', 'Instagram_Media')
+                    ydl.download([url])
                     
+                    downloaded_files = list(self.output_dir.glob(f"*{title}*"))
+                    if downloaded_files:
+                        file_path = downloaded_files[0]
+                        return {
+                            'success': True,
+                            'title': title,
+                            'file_path': str(file_path),
+                            'file_size': file_path.stat().st_size,
+                            'format': format_type
+                        }
+                        
             return {'success': False, 'error': 'Arquivo não encontrado após download'}
             
         except Exception as e:
@@ -229,6 +269,7 @@ def main():
     else:
         result = {'success': False, 'error': 'Plataforma não suportada'}
     
+    # Garantir que apenas o JSON seja impresso no stdout
     print(json.dumps(result))
 
 if __name__ == "__main__":
