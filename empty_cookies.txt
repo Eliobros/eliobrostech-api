@@ -1,0 +1,2 @@
+# Netscape HTTP Cookie File
+# Arquivo vazio para contornar detecção de bot

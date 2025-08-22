@@ -17,7 +17,7 @@ class DownloadService:
     def download_youtube(self, url, format_type="mp4"):
         """Download do YouTube"""
         try:
-            # Configurações baseadas no formato
+            # Configurações baseadas no formato com User-Agent realista
             if format_type == "mp3":
                 ydl_opts = {
                     'format': 'bestaudio/best',
@@ -31,6 +31,24 @@ class DownloadService:
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
                     'progress_hooks': [],  # Desabilitar hooks de progresso
+                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'http_headers': {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Accept-Language': 'en-us,en;q=0.5',
+                        'Accept-Encoding': 'gzip,deflate',
+                        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+                        'Connection': 'keep-alive',
+                    },
+                    'extractor_args': {
+                        'youtube': {
+                            'skip': ['dash', 'hls'],
+                            'player_client': ['android', 'web'],
+                            'player_skip': ['webpage', 'configs'],
+                        }
+                    },
+                    'socket_timeout': 30,
+                    'retries': 3,
                 }
             elif format_type == "m4a":
                 ydl_opts = {
@@ -40,6 +58,24 @@ class DownloadService:
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
                     'progress_hooks': [],  # Desabilitar hooks de progresso
+                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'http_headers': {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Accept-Language': 'en-us,en;q=0.5',
+                        'Accept-Encoding': 'gzip,deflate',
+                        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+                        'Connection': 'keep-alive',
+                    },
+                    'extractor_args': {
+                        'youtube': {
+                            'skip': ['dash', 'hls'],
+                            'player_client': ['android', 'web'],
+                            'player_skip': ['webpage', 'configs'],
+                        }
+                    },
+                    'socket_timeout': 30,
+                    'retries': 3,
                 }
             elif format_type == "wav":
                 ydl_opts = {
@@ -53,6 +89,24 @@ class DownloadService:
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
                     'progress_hooks': [],  # Desabilitar hooks de progresso
+                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'http_headers': {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Accept-Language': 'en-us,en;q=0.5',
+                        'Accept-Encoding': 'gzip,deflate',
+                        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+                        'Connection': 'keep-alive',
+                    },
+                    'extractor_args': {
+                        'youtube': {
+                            'skip': ['dash', 'hls'],
+                            'player_client': ['android', 'web'],
+                            'player_skip': ['webpage', 'configs'],
+                        }
+                    },
+                    'socket_timeout': 30,
+                    'retries': 3,
                 }
             else:  # mp4 default
                 ydl_opts = {
@@ -62,7 +116,33 @@ class DownloadService:
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
                     'progress_hooks': [],  # Desabilitar hooks de progresso
+                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'http_headers': {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Accept-Language': 'en-us,en;q=0.5',
+                        'Accept-Encoding': 'gzip,deflate',
+                        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+                        'Connection': 'keep-alive',
+                    },
+                    'extractor_args': {
+                        'youtube': {
+                            'skip': ['dash', 'hls'],
+                            'player_client': ['android', 'web'],
+                            'player_skip': ['webpage', 'configs'],
+                        }
+                    },
+                    'socket_timeout': 30,
+                    'retries': 3,
                 }
+            
+            # Criar arquivo de cookies vazio para tentar contornar a detecção
+            cookies_file = "empty_cookies.txt"
+            with open(cookies_file, 'w') as f:
+                f.write("# Netscape HTTP Cookie File\n")
+                f.write("# Arquivo vazio para contornar detecção de bot\n")
+            
+            ydl_opts['cookies'] = cookies_file
             
             # Usar subprocess para executar o yt-dlp com output completamente suprimido
             with tempfile.NamedTemporaryFile(mode='w+', suffix='.json') as temp_file:
@@ -119,6 +199,7 @@ class DownloadService:
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
                     'progress_hooks': [],  # Desabilitar hooks de progresso
+                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 }
             else:
                 ydl_opts = {
@@ -128,6 +209,7 @@ class DownloadService:
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
                     'progress_hooks': [],  # Desabilitar hooks de progresso
+                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 }
             
             # Usar subprocess para executar o yt-dlp com output completamente suprimido
@@ -179,6 +261,7 @@ class DownloadService:
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
                     'progress_hooks': [],  # Desabilitar hooks de progresso
+                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 }
             else:
                 ydl_opts = {
@@ -188,6 +271,7 @@ class DownloadService:
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
                     'progress_hooks': [],  # Desabilitar hooks de progresso
+                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 }
             
             # Usar subprocess para executar o yt-dlp com output completamente suprimido
@@ -239,6 +323,7 @@ class DownloadService:
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
                     'progress_hooks': [],  # Desabilitar hooks de progresso
+                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 }
             else:
                 ydl_opts = {
@@ -248,6 +333,7 @@ class DownloadService:
                     'no_warnings': True,  # Suprimir warnings
                     'noprogress': True,  # Suprimir barra de progresso
                     'progress_hooks': [],  # Desabilitar hooks de progresso
+                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 }
             
             # Usar subprocess para executar o yt-dlp com output completamente suprimido
