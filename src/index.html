@@ -263,6 +263,106 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Responsividade Mobile */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 1rem;
+                margin: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .tab {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            .platform-buttons {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .platform-btn {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            .format-selector {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+            
+            .format-btn {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            
+            .api-key-card {
+                padding: 1rem;
+            }
+            
+            .api-key-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+            
+            .btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 98%;
+                padding: 0.75rem;
+                margin: 0.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .download-section {
+                padding: 1rem;
+            }
+            
+            .form-group {
+                margin-bottom: 1rem;
+            }
+            
+            input, select, textarea {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+        }
+
         .download-section {
             background: white;
             border: 2px solid #e1e5e9;
@@ -301,24 +401,27 @@
         }
 
         .format-selector {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
         }
 
         .format-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem;
             border: 2px solid #e1e5e9;
             border-radius: 8px;
             background: white;
             cursor: pointer;
+            text-align: center;
             transition: all 0.3s ease;
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .format-btn:hover {
             border-color: #667eea;
+            background: #f8f9fa;
         }
 
         .format-btn.active {
@@ -335,27 +438,95 @@
             background: white;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                width: 95%;
-                padding: 1rem;
-            }
+        .valid-url {
+            border-color: #28a745; /* Green border for valid URLs */
+        }
 
-            .header h1 {
-                font-size: 2rem;
-            }
+        .invalid-url {
+            border-color: #dc3545; /* Red border for valid URLs */
+        }
 
-            .tabs {
-                flex-direction: column;
-            }
+        /* Progress Bar para Downloads */
+        .progress-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 2px solid #e1e5e9;
+        }
 
-            .platform-buttons {
-                grid-template-columns: 1fr 1fr;
-            }
+        .progress-bar {
+            width: 0%;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-            .format-selector {
-                justify-content: center;
-            }
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 50px 50px;
+            animation: move 2s linear infinite;
+        }
+
+        @keyframes move {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .download-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .status-processing {
+            background: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-success {
+            background: #28a745;
+        }
+
+        .status-error {
+            background: #dc3545;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
     </style>
 </head>
@@ -498,11 +669,34 @@
         window.onload = function() {
             const token = localStorage.getItem('token');
             if (token) {
-                currentUser = { token };
-                showDashboard();
-                loadApiKeys();
+                // Tentar fazer login automático
+                fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'test',
+                        password: 'test'
+                    })
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.token) {
+                        localStorage.setItem('token', data.token);
+                        showDashboard();
+                    } else {
+                        showLoginForm();
+                    }
+                }).catch(() => {
+                    showLoginForm();
+                });
+            } else {
+                showLoginForm();
             }
-        };
+            
+            // Inicializar validação de URL
+            setupUrlValidation();
+        }
 
         // Funções de Autenticação
         function switchAuthTab(tab) {
@@ -597,8 +791,14 @@
         }
 
         function showDashboard() {
-            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('dashboardSection').classList.remove('hidden');
+            
+            // Carregar API Keys automaticamente
+            loadApiKeys();
+            
+            // Mostrar mensagem de boas-vindas
+            showAlert('Bem-vindo ao Dashboard de Downloads! 🎉', 'info');
         }
 
         // Funções de API Keys
@@ -713,12 +913,63 @@
             document.querySelectorAll('.platform-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             selectedPlatform = platform;
+            
+            // Atualizar placeholder da URL baseado na plataforma
+            const urlInput = document.getElementById('downloadUrl');
+            const placeholders = {
+                youtube: 'https://www.youtube.com/watch?v=...',
+                facebook: 'https://www.facebook.com/watch?v=...',
+                tiktok: 'https://www.tiktok.com/@user/video/...',
+                instagram: 'https://www.instagram.com/p/...',
+                spotify: 'https://open.spotify.com/track/...'
+            };
+            urlInput.placeholder = placeholders[platform] || 'Cole a URL aqui...';
+            
+            // Validar URL atual se existir
+            if (urlInput.value) {
+                validateUrl(urlInput.value, platform);
+            }
         }
 
         function selectFormat(format) {
             document.querySelectorAll('.format-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             selectedFormat = format;
+        }
+
+        // Validação de URLs melhorada
+        function validateUrl(url, platform) {
+            const patterns = {
+                youtube: /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/,
+                facebook: /^(https?:\/\/)?(www\.)?(facebook\.com|fb\.com)\/.+/,
+                tiktok: /^(https?:\/\/)?(www\.)?(tiktok\.com)\/.+/,
+                instagram: /^(https?:\/\/)?(www\.)?(instagram\.com)\/.+/,
+                spotify: /^(https?:\/\/)?(open\.)?(spotify\.com)\/.+/
+            };
+            
+            const urlInput = document.getElementById('downloadUrl');
+            const isValid = patterns[platform]?.test(url);
+            
+            // Remover classes de validação anteriores
+            urlInput.classList.remove('valid-url', 'invalid-url');
+            
+            if (url && isValid) {
+                urlInput.classList.add('valid-url');
+                return true;
+            } else if (url && !isValid) {
+                urlInput.classList.add('invalid-url');
+                return false;
+            }
+            
+            return true; // URL vazia é considerada válida
+        }
+
+        // Validar URL em tempo real
+        function setupUrlValidation() {
+            const urlInput = document.getElementById('downloadUrl');
+            urlInput.addEventListener('input', function() {
+                validateUrl(this.value, selectedPlatform);
+            });
         }
 
         async function populateApiKeySelectors() {
@@ -756,8 +1007,30 @@
                 return;
             }
 
+            // Validar URL antes de enviar
+            if (!validateUrl(url, selectedPlatform)) {
+                showAlert(`URL inválida para ${selectedPlatform}. Verifique o formato.`, 'error');
+                return;
+            }
+
             const resultDiv = document.getElementById('downloadResult');
-            resultDiv.innerHTML = '<div class="loading"></div> Processando download...';
+            
+            // Mostrar progress bar inicial
+            resultDiv.innerHTML = `
+                <div class="progress-container">
+                    <div class="download-status">
+                        <div class="status-icon status-processing"></div>
+                        <span>Iniciando download...</span>
+                    </div>
+                    <div class="progress-bar" style="width: 10%"></div>
+                    <div class="progress-text">Conectando ao servidor...</div>
+                </div>
+            `;
+
+            // Simular progresso inicial
+            setTimeout(() => {
+                updateDownloadProgress(25, 'Extraindo informações do vídeo...');
+            }, 500);
 
             try {
                 const response = await fetch(`${API_BASE}/api/download/${selectedPlatform}`, {
@@ -769,34 +1042,97 @@
                     body: JSON.stringify({ url, type: selectedFormat })
                 });
 
+                // Simular progresso durante o download
+                setTimeout(() => {
+                    updateDownloadProgress(75, 'Processando download...');
+                }, 1000);
+
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    resultDiv.innerHTML = `
-                        <div class="alert alert-success">
-                            <h4>Download concluído!</h4>
-                            <p><strong>Título:</strong> ${data.title}</p>
-                            <p><strong>Formato:</strong> ${data.format}</p>
-                            <p><strong>Tamanho:</strong> ${(data.file_size / 1024 / 1024).toFixed(2)} MB</p>
-                            <p><strong>Arquivo:</strong> ${data.file_path}</p>
-                        </div>
-                    `;
+                    // Download concluído com sucesso
+                    updateDownloadProgress(100, 'Download concluído!');
+                    
+                    setTimeout(() => {
+                        resultDiv.innerHTML = `
+                            <div class="alert alert-success">
+                                <div class="download-status">
+                                    <div class="status-icon status-success"></div>
+                                    <h4>Download concluído com sucesso! 🎉</h4>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p><strong>📺 Título:</strong> ${data.title}</p>
+                                    <p><strong>🎵 Formato:</strong> ${data.format}</p>
+                                    <p><strong>💾 Tamanho:</strong> ${(data.file_size / 1024 / 1024).toFixed(2)} MB</p>
+                                    <p><strong>📁 Arquivo:</strong> ${data.file_path}</p>
+                                </div>
+                                <button class="btn btn-secondary" onclick="copyToClipboard('${data.file_path}')" style="margin-top: 1rem;">
+                                    📋 Copiar Caminho
+                                </button>
+                            </div>
+                        `;
+                    }, 500);
                 } else {
-                    resultDiv.innerHTML = `
-                        <div class="alert alert-error">
-                            <h4>Erro no download</h4>
-                            <p>${data.error || 'Erro desconhecido'}</p>
-                        </div>
-                    `;
+                    // Erro no download
+                    updateDownloadProgress(100, 'Erro no download');
+                    
+                    setTimeout(() => {
+                        resultDiv.innerHTML = `
+                            <div class="alert alert-error">
+                                <div class="download-status">
+                                    <div class="status-icon status-error"></div>
+                                    <h4>❌ Erro no download</h4>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <p><strong>Erro:</strong> ${data.error || 'Erro desconhecido'}</p>
+                                    ${data.error && data.error.includes('Sign in to confirm') ? 
+                                        '<p><strong>💡 Dica:</strong> Este erro é comum no YouTube. Considere usar cookies válidos.</p>' : 
+                                        ''
+                                    }
+                                </div>
+                            </div>
+                        `;
+                    }, 500);
                 }
             } catch (error) {
-                resultDiv.innerHTML = `
-                    <div class="alert alert-error">
-                        <h4>Erro de conexão</h4>
-                        <p>${error.message}</p>
-                    </div>
-                `;
+                // Erro de conexão
+                updateDownloadProgress(100, 'Erro de conexão');
+                
+                setTimeout(() => {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-error">
+                            <div class="download-status">
+                                <div class="status-icon status-error"></div>
+                                <h4>🌐 Erro de conexão</h4>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <p><strong>Erro:</strong> ${error.message}</p>
+                                <p><strong>💡 Dica:</strong> Verifique sua conexão com a internet e tente novamente.</p>
+                            </div>
+                        </div>
+                    `;
+                }, 500);
             }
+        }
+
+        // Função para atualizar progress bar
+        function updateDownloadProgress(progress, text) {
+            const progressBar = document.querySelector('.progress-bar');
+            const progressText = document.querySelector('.progress-text');
+            
+            if (progressBar && progressText) {
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = text;
+            }
+        }
+
+        // Função para copiar para clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert('Caminho copiado para clipboard!', 'success');
+            }).catch(() => {
+                showAlert('Erro ao copiar para clipboard', 'error');
+            });
         }
 
         // Funções de Estatísticas
